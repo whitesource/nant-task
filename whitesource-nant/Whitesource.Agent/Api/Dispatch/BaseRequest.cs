@@ -29,19 +29,19 @@ namespace Whitesource.Agent.Api.Dispatch
 
         /* --- Members --- */
 
-        protected RequestType type { get; set; }
+        protected RequestType Type { get; set; }
 
-        protected String agent { get; set; }
+        protected String Agent { get; set; }
 
-        protected String agentVersion { get; set; }
+        protected String AgentVersion { get; set; }
 
-        protected String orgToken { get; set; }
+        protected String OrgToken { get; set; }
 
-        protected String product { get; set; }
+        protected String Product { get; set; }
 
-        protected String productVersion { get; set; }
+        protected String ProductVersion { get; set; }
 
-        protected long timeStamp { get; set; }
+        protected long TimeStamp { get; set; }
 
         /* --- Constructors --- */
 
@@ -75,9 +75,9 @@ namespace Whitesource.Agent.Api.Dispatch
 	     */
         public BaseRequest(RequestType type, String agent, String agentVersion)
         {
-            this.type = type;
-            this.agent = agent;
-            this.agentVersion = agentVersion;
+            this.Type = type;
+            this.Agent = agent;
+            this.AgentVersion = agentVersion;
 
             // get current time in ms
             TimeSpan ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));

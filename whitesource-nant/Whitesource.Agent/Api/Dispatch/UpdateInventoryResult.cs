@@ -28,13 +28,13 @@ namespace Whitesource.Agent.Api.Dispatch
         /* --- Members --- */
 
         [DataMember(Name = "organization")]
-        public String organization { get; set; }
+        public String Organization { get; set; }
 
         [DataMember(Name = "updatedProjects")]
-        public List<String> updatedProjects { get; set; }
+        public List<String> UpdatedProjects { get; set; }
 
         [DataMember(Name = "createdProjects")]
-        public List<String> createdProjects { get; set; }
+        public List<String> CreatedProjects { get; set; }
 
         /* --- Constructors --- */
 
@@ -43,8 +43,8 @@ namespace Whitesource.Agent.Api.Dispatch
 	     */
         public UpdateInventoryResult()
         {
-            updatedProjects = new List<String>();
-            createdProjects = new List<String>();
+            UpdatedProjects = new List<String>();
+            CreatedProjects = new List<String>();
         }
 
         /**
@@ -55,7 +55,7 @@ namespace Whitesource.Agent.Api.Dispatch
         public UpdateInventoryResult(String organization)
             : this()
         {
-            this.organization = organization;
+            this.Organization = organization;
         }
     }
 }

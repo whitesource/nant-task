@@ -31,10 +31,10 @@ namespace Whitesource.Agent.Api.Model
         /* --- Members --- */
 
         [DataMember(Name = "artifactId")]
-        public String artifactId { get; set; }
+        public String ArtifactId { get; set; }
 
         [DataMember(Name = "groupId")]
-        public String groupId { get; set; }
+        public String GroupId { get; set; }
 
         /* --- Constructors --- */
 
@@ -53,8 +53,8 @@ namespace Whitesource.Agent.Api.Model
          */
         public ExclusionInfo(String artifactId, String groupId)
         {
-            this.artifactId = artifactId;
-            this.groupId = groupId;
+            this.ArtifactId = artifactId;
+            this.GroupId = groupId;
         }
 
         /* --- Overridden methods --- */
@@ -65,8 +65,8 @@ namespace Whitesource.Agent.Api.Model
 
             sb.Append("ExclusionInfo@").Append(GetHashCode().ToString("X4"))
                 .Append("[")
-                .Append("groupId= ").Append(groupId).Append(",")
-                .Append("artifactId= ").Append(artifactId)
+                .Append("groupId= ").Append(GroupId).Append(",")
+                .Append("artifactId= ").Append(ArtifactId)
                 .Append(" ]");
 
             return sb.ToString();

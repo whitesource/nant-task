@@ -30,6 +30,8 @@ using Whitesource.Agent.Client;
 using Whitesource.Agent.Api.Model;
 using Whitesource.Agent.Api.Dispatch;
 
+using Consts = Whitesource.NAnt.Constants.Constants;
+
 namespace Whitesource.NAnt.Tasks
 {
     /**
@@ -61,7 +63,7 @@ namespace Whitesource.NAnt.Tasks
          */
         private FileSet _fileset = new FileSet();
 
-        [BuildElement("fileset", Required = true)]
+        [BuildElement("fileset", Required = false)]
         public virtual FileSet FileSet
         {
             get { return _fileset; }
@@ -82,6 +84,18 @@ namespace Whitesource.NAnt.Tasks
         }
 
         /**
+         * The network proxy to use to access the Internet resource.
+         */
+        private Proxy _proxy;
+
+        [BuildElement("proxy", Required = false)]
+        public Proxy Proxy
+        {
+            get { return _proxy; }
+            set { _proxy = value; }
+        }
+
+        /**
          * Check policies configuration.
          */
         private bool _checkPolicies;
@@ -94,6 +108,9 @@ namespace Whitesource.NAnt.Tasks
             set { _checkPolicies = value; }
         }
 
+        /**
+	     * Module token to match White Source project.
+	     */
         private String _projectToken;
 
         [TaskAttribute("projecttoken", Required = false)]
@@ -132,15 +149,15 @@ namespace Whitesource.NAnt.Tasks
             AgentProjectInfo projectInfo = new AgentProjectInfo();
             if (String.IsNullOrEmpty(projectToken))
             {
-                projectInfo.coordinates = new Coordinates(null, project.ProjectName, null);
+                projectInfo.Coordinates = new Coordinates(null, project.ProjectName, null);
             }
             else
             {
-                projectInfo.projectToken = projectToken;
+                projectInfo.ProjectToken = projectToken;
             }
 
             // scan files and calculate SHA-1 values
-            List<DependencyInfo> dependencies = projectInfo.dependencies;
+            List<DependencyInfo> dependencies = projectInfo.Dependencies;
             foreach (String pathname in FileSet.FileNames)
             {
                 FileInfo srcInfo = new FileInfo(pathname);
@@ -151,9 +168,9 @@ namespace Whitesource.NAnt.Tasks
                     Log(Level.Debug, "SHA-1 for " + filename + " is: " + sha1);
 
                     DependencyInfo dependency = new DependencyInfo();
-                    dependency.sha1 = sha1;
-                    dependency.artifactId = filename;
-                    dependency.systemPath = pathname;
+                    dependency.Sha1 = sha1;
+                    dependency.ArtifactId = filename;
+                    dependency.SystemPath = pathname;
                     dependencies.Add(dependency);
                 }
             }
@@ -181,13 +198,15 @@ namespace Whitesource.NAnt.Tasks
                 request.ContentType = "application/x-www-form-urlencoded";
                 request.Accept = "application/json";
 
+                SetProxy(request);
+
                 // add post data to request
                 StringBuilder postString = new StringBuilder();
                 postString.AppendFormat("{0}={1}", APIConstants.PARAM_REQUEST_TYPE, System.Web.HttpUtility.UrlEncode("UPDATE"));
                 postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_AGENT, System.Web.HttpUtility.UrlEncode("nant-task"));
+                postString.AppendFormat("{0}={1}", APIConstants.PARAM_AGENT, System.Web.HttpUtility.UrlEncode(Consts.AGENT_TYPE));
                 postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_AGENT_VERSION, System.Web.HttpUtility.UrlEncode("1.0"));
+                postString.AppendFormat("{0}={1}", APIConstants.PARAM_AGENT_VERSION, System.Web.HttpUtility.UrlEncode(Consts.AGENT_VERSION));
                 postString.Append("&");
                 postString.AppendFormat("{0}={1}", APIConstants.PARAM_TOKEN, System.Web.HttpUtility.UrlEncode(apiKey));
                 postString.Append("&");
@@ -207,6 +226,7 @@ namespace Whitesource.NAnt.Tasks
                 String json = Encoding.Default.GetString(ms.ToArray());
                 postString.AppendFormat("{0}={1}", APIConstants.PARAM_DIFF, System.Web.HttpUtility.UrlEncode(json));
                 Log(Level.Debug, "AgentProjectInfo JSON: " + json);
+                DebugAgentProjectInfos(projects);
 
                 ASCIIEncoding ascii = new ASCIIEncoding();
                 byte[] postBytes = ascii.GetBytes(postString.ToString());
@@ -220,10 +240,7 @@ namespace Whitesource.NAnt.Tasks
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        throw new Exception(String.Format(
-                            "Server error (HTTP {0}: {1}).",
-                            response.StatusCode,
-                            response.StatusDescription));
+                        throw new Exception(String.Format("Server error (HTTP {0}: {1}).", response.StatusCode, response.StatusDescription));
                     }
 
                     using (Stream stream = response.GetResponseStream())
@@ -239,7 +256,7 @@ namespace Whitesource.NAnt.Tasks
                         resultEnvelope = responseSerializer.ReadObject(responseMS) as ResultEnvelope;
                         responseMS.Close();
 
-                        String data = resultEnvelope.data;
+                        String data = resultEnvelope.Data;
                         Log(Level.Debug, "Result data is: " + data);
 
                         // convert data JSON to UpdateInventoryResult
@@ -260,6 +277,42 @@ namespace Whitesource.NAnt.Tasks
             }
         }
 
+        private void SetProxy(HttpWebRequest request)
+        {
+            if (Proxy == null)
+            {
+                Log(Level.Debug, "Not using proxy");
+            }
+            else
+            {
+                String host = Proxy.Host;
+                int port = Proxy.Port;
+                Log(Level.Debug, "Using proxy: " + host + ":" + port);
+
+                // check credentials
+                Credential credential = Proxy.Credentials;
+                if (credential == null)
+                {
+                    request.Proxy = new WebProxy(host, port);
+                }
+                else
+                {
+                    Uri proxyURI = new Uri(String.Format("{0}:{1}", host, port));
+                    String userName = credential.UserName;
+                    String password = credential.Password;
+                    if (String.IsNullOrEmpty(userName) && String.IsNullOrEmpty(password))
+                    {
+                        request.Proxy = new WebProxy(host, port);
+                    }
+                    else
+                    {
+                        ICredentials credentials = new NetworkCredential(userName, password);
+                        request.Proxy = new WebProxy(proxyURI, true, null, credentials);
+                    }
+                }
+            }
+        }
+
         private void DebugAgentProjectInfos(List<AgentProjectInfo> projectInfos)
         {
             Log(Level.Debug, "|----------------- dumping projectInfos -----------------|");
@@ -267,15 +320,15 @@ namespace Whitesource.NAnt.Tasks
 
             foreach (AgentProjectInfo projectInfo in projectInfos)
             {
-                Log(Level.Debug, "Project coordinates: " + projectInfo.coordinates);
-                Log(Level.Debug, "Project parent coordinates: " + projectInfo.parentCoordinates);
-                Log(Level.Debug, "Project project token: " + projectInfo.projectToken);
+                Log(Level.Debug, "Project coordinates: " + projectInfo.Coordinates);
+                Log(Level.Debug, "Project parent coordinates: " + projectInfo.ParentCoordinates);
+                Log(Level.Debug, "Project project token: " + projectInfo.ProjectToken);
 
-                List<DependencyInfo> dependencies = projectInfo.dependencies;
+                List<DependencyInfo> dependencies = projectInfo.Dependencies;
                 Log(Level.Debug, "total # of dependencies: " + dependencies.Count);
                 foreach (DependencyInfo info in dependencies)
                 {
-                    Log(Level.Debug, info + " SHA-1: " + info.sha1);
+                    Log(Level.Debug, info + " SHA-1: " + info.Sha1);
                 }
             }
             Log(Level.Debug, "|-------------------- dump finished --------------------|");
@@ -284,10 +337,10 @@ namespace Whitesource.NAnt.Tasks
         private void LogUpdateResult(UpdateInventoryResult result)
         {
             Log(Level.Info, "White Source update results:");
-            Log(Level.Info, "White Source organization: " + result.organization);
+            Log(Level.Info, "White Source organization: " + result.Organization);
 
             // newly created projects
-            List<String> createdProjects = result.createdProjects;
+            List<String> createdProjects = result.CreatedProjects;
             if (createdProjects.Count == 0)
             {
                 Log(Level.Info, "No new projects found");
@@ -302,7 +355,7 @@ namespace Whitesource.NAnt.Tasks
             }
 
             // updated projects
-            List<String> updatedProjects = result.updatedProjects;
+            List<String> updatedProjects = result.UpdatedProjects;
             if (updatedProjects.Count == 0)
             {
                 Log(Level.Info, "No projects were updated");

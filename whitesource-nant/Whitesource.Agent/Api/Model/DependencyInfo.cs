@@ -36,34 +36,34 @@ namespace Whitesource.Agent.Api.Model
         /* --- Members --- */
 
         [DataMember(Name = "groupId")]
-        public String groupId { get; set; }
+        public String GroupId { get; set; }
 
         [DataMember(Name = "artifactId")]
-        public String artifactId { get; set; }
+        public String ArtifactId { get; set; }
 
         [DataMember(Name = "version")]
-        public String version { get; set; }
+        public String Version { get; set; }
 
         [DataMember(Name = "type")]
-        public String type { get; set; }
+        public String Type { get; set; }
 
         [DataMember(Name = "classifier")]
-        public String classifier { get; set; }
+        public String Classifier { get; set; }
 
         [DataMember(Name = "scope")]
-        public String scope { get; set; }
+        public String Scope { get; set; }
 
         [DataMember(Name = "sha1")]
-        public String sha1 { get; set; }
+        public String Sha1 { get; set; }
 
         [DataMember(Name = "systemPath")]
-        public String systemPath { get; set; }
+        public String SystemPath { get; set; }
 
         [DataMember(Name = "exclusions")]
-        public List<ExclusionInfo> exclusions { get; set; }
+        public List<ExclusionInfo> Exclusions { get; set; }
 
         [DataMember(Name = "optional")]
-        public bool optional { get; set; }
+        public bool Optional { get; set; }
 
         /* --- Constructors --- */
 
@@ -72,7 +72,7 @@ namespace Whitesource.Agent.Api.Model
          */
         public DependencyInfo()
         {
-            exclusions = new List<ExclusionInfo>();
+            Exclusions = new List<ExclusionInfo>();
         }
 
         /**
@@ -85,9 +85,9 @@ namespace Whitesource.Agent.Api.Model
         public DependencyInfo(String groupId, String artifactId, String version)
             : this()
         {
-            this.groupId = groupId;
-            this.artifactId = artifactId;
-            this.version = version;
+            this.GroupId = groupId;
+            this.ArtifactId = artifactId;
+            this.Version = version;
         }
 
         /**
@@ -98,7 +98,7 @@ namespace Whitesource.Agent.Api.Model
         public DependencyInfo(String sha1)
             : this()
         {
-            this.sha1 = sha1;
+            this.Sha1 = sha1;
         }
 
         /* --- Overridden methods --- */
@@ -109,9 +109,9 @@ namespace Whitesource.Agent.Api.Model
 
             sb.Append("DependencyInfo@").Append(GetHashCode().ToString("X4"))
                 .Append("[")
-                .Append("groupId= ").Append(groupId).Append(",")
-                .Append("artifactId= ").Append(artifactId).Append(",")
-                .Append("version= ").Append(version)
+                .Append("groupId= ").Append(GroupId).Append(",")
+                .Append("artifactId= ").Append(ArtifactId).Append(",")
+                .Append("version= ").Append(Version)
                 .Append(" ]");
 
             return sb.ToString();
@@ -119,7 +119,7 @@ namespace Whitesource.Agent.Api.Model
 
         public override int GetHashCode()
         {
-            return new Coordinates(groupId, artifactId, version).GetHashCode();
+            return new Coordinates(GroupId, ArtifactId, Version).GetHashCode();
         }
 
         public override bool Equals(Object obj)
@@ -130,9 +130,9 @@ namespace Whitesource.Agent.Api.Model
 
             DependencyInfo other = (DependencyInfo)obj;
 
-            return (groupId == null) ? (other.groupId == null) : groupId.Equals(other.groupId)
-                    && ((artifactId == null) ? (other.artifactId == null) : artifactId.Equals(other.artifactId))
-                    && ((version == null) ? (other.version == null) : version.Equals(other.version));
+            return (GroupId == null) ? (other.GroupId == null) : GroupId.Equals(other.GroupId)
+                    && ((ArtifactId == null) ? (other.ArtifactId == null) : ArtifactId.Equals(other.ArtifactId))
+                    && ((Version == null) ? (other.Version == null) : Version.Equals(other.Version));
         }
 
     }

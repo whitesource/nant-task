@@ -42,15 +42,15 @@ namespace Whitesource.Agent.Api.Dispatch
 
         /** Status code of the operation. */
         [DataMember(Name = "status")]
-        public int status { get; set; }
+        public int Status { get; set; }
 
         /** Human readable message. */
         [DataMember(Name = "message")]
-        public String message { get; set; }
+        public String Message { get; set; }
 
         /** Data associated with the result */
         [DataMember(Name = "data")]
-        public String data { get; set; }
+        public String Data { get; set; }
 
         /* --- Constructors --- */
 
@@ -70,9 +70,9 @@ namespace Whitesource.Agent.Api.Dispatch
 	     */
         public ResultEnvelope(int status, String message, String data)
         {
-            this.status = status;
-            this.message = message;
-            this.data = data;
+            this.Status = status;
+            this.Message = message;
+            this.Data = data;
         }
 
         /* --- Overridden methods --- */
@@ -83,9 +83,9 @@ namespace Whitesource.Agent.Api.Dispatch
 
             sb.Append("ResultEnvelope@").Append(GetHashCode().ToString("X4")).Append("[")
             .Append("\n").Append("envelopeVersion=").Append(envelopeVersion).Append(",")
-            .Append("\n").Append("status=").Append(status).Append(",")
-            .Append("\n").Append("message=").Append(message).Append(",")
-            .Append("\n").Append("data=").Append(data)
+            .Append("\n").Append("status=").Append(Status).Append(",")
+            .Append("\n").Append("message=").Append(Message).Append(",")
+            .Append("\n").Append("data=").Append(Data)
             .Append("\n]");
 
             return sb.ToString();

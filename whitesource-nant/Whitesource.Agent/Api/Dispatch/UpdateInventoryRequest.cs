@@ -33,17 +33,17 @@ namespace Whitesource.Agent.Api.Dispatch
 
         /* --- Members --- */
 
-        protected List<AgentProjectInfo> projects { get; set; }
+        protected List<AgentProjectInfo> Projects { get; set; }
 
         /* --- Constructors --- */
 
         /**
-     * Default constructor
-     */
+         * Default constructor
+         */
         public UpdateInventoryRequest()
             : base(RequestType.UPDATE)
         {
-            projects = new List<AgentProjectInfo>();
+            Projects = new List<AgentProjectInfo>();
         }
 
         /**
@@ -51,24 +51,24 @@ namespace Whitesource.Agent.Api.Dispatch
          *
          * @param projects Open Source usage statement to update White Source.
          */
-        public UpdateInventoryRequest(List<AgentProjectInfo> projects) 
+        public UpdateInventoryRequest(List<AgentProjectInfo> projects)
             : this()
         {
-            this.projects = projects;
+            this.Projects = projects;
         }
 
 
-	    /**
-	     * Constructor
-	     * 
-	     * @param orgToken WhiteSource organization token.
-	     * @param projects Open Source usage statement to update White Source.
-	     */
-	    public UpdateInventoryRequest(String orgToken, List<AgentProjectInfo> projects) 
+        /**
+         * Constructor
+         * 
+         * @param orgToken WhiteSource organization token.
+         * @param projects Open Source usage statement to update White Source.
+         */
+        public UpdateInventoryRequest(String orgToken, List<AgentProjectInfo> projects)
             : this(projects)
         {
-		    this.orgToken = orgToken;
-	    }
+            this.OrgToken = orgToken;
+        }
     }
 
 }

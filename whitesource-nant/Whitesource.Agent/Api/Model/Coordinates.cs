@@ -35,13 +35,13 @@ namespace Whitesource.Agent.Api.Model
         /* --- Members --- */
 
         [DataMember(Name = "groupId")]
-        public String groupId { get; set; }
+        public String GroupId { get; set; }
 
         [DataMember(Name = "artifactId")]
-        public String artifactId { get; set; }
+        public String ArtifactId { get; set; }
 
         [DataMember(Name = "version")]
-        public String version { get; set; }
+        public String Version { get; set; }
 
         /* --- Constructors --- */
 
@@ -61,9 +61,9 @@ namespace Whitesource.Agent.Api.Model
          */
         public Coordinates(String groupId, String artifactId, String version)
         {
-            this.groupId = groupId;
-            this.artifactId = artifactId;
-            this.version = version;
+            this.GroupId = groupId;
+            this.ArtifactId = artifactId;
+            this.Version = version;
         }
 
         /* --- Overridden methods --- */
@@ -74,9 +74,9 @@ namespace Whitesource.Agent.Api.Model
 
             sb.Append("Coordinates@").Append(GetHashCode().ToString("X4"))
                     .Append("[")
-                    .Append("groupId= ").Append(groupId).Append(",")
-                    .Append("artifactId= ").Append(artifactId).Append(",")
-                    .Append("version= ").Append(version)
+                    .Append("groupId= ").Append(GroupId).Append(",")
+                    .Append("artifactId= ").Append(ArtifactId).Append(",")
+                    .Append("version= ").Append(Version)
                     .Append(" ]");
 
             return sb.ToString();
@@ -85,9 +85,9 @@ namespace Whitesource.Agent.Api.Model
         public override int GetHashCode()
         {
             int code = APIConstants.HASH_CODE_SEED;
-            code = APIConstants.HASH_CODE_FACTOR * code + ((groupId == null) ? 0 : groupId.GetHashCode());
-            code = APIConstants.HASH_CODE_FACTOR * code + ((artifactId == null) ? 0 : artifactId.GetHashCode());
-            code = APIConstants.HASH_CODE_FACTOR * code + ((version == null) ? 0 : version.GetHashCode());
+            code = APIConstants.HASH_CODE_FACTOR * code + ((GroupId == null) ? 0 : GroupId.GetHashCode());
+            code = APIConstants.HASH_CODE_FACTOR * code + ((ArtifactId == null) ? 0 : ArtifactId.GetHashCode());
+            code = APIConstants.HASH_CODE_FACTOR * code + ((Version == null) ? 0 : Version.GetHashCode());
 
             return code;
         }
@@ -100,9 +100,9 @@ namespace Whitesource.Agent.Api.Model
 
             Coordinates other = (Coordinates)obj;
 
-            return (groupId == null) ? (other.groupId == null) : groupId.Equals(other.groupId)
-                    && ((artifactId == null) ? (other.artifactId == null) : artifactId.Equals(other.artifactId))
-                    && ((version == null) ? (other.version == null) : version.Equals(other.version));
+            return (GroupId == null) ? (other.GroupId == null) : GroupId.Equals(other.GroupId)
+                    && ((ArtifactId == null) ? (other.ArtifactId == null) : ArtifactId.Equals(other.ArtifactId))
+                    && ((Version == null) ? (other.Version == null) : Version.Equals(other.Version));
         }
 
     }

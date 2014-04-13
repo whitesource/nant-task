@@ -36,16 +36,16 @@ namespace Whitesource.Agent.Api.Model
         /* --- Members --- */
 
         [DataMember(Name = "coordinates")]
-        public Coordinates coordinates { get; set; }
+        public Coordinates Coordinates { get; set; }
 
         [DataMember(Name = "parentCoordinates")]
-        public Coordinates parentCoordinates { get; set; }
+        public Coordinates ParentCoordinates { get; set; }
 
         [DataMember(Name = "dependencies")]
-        public List<DependencyInfo> dependencies { get; set; }
+        public List<DependencyInfo> Dependencies { get; set; }
 
         [DataMember(Name = "projectToken")]
-        public String projectToken { get; set; }
+        public String ProjectToken { get; set; }
 
         /* --- Constructors --- */
 
@@ -55,7 +55,7 @@ namespace Whitesource.Agent.Api.Model
          */
         public AgentProjectInfo()
         {
-            dependencies = new List<DependencyInfo>();
+            Dependencies = new List<DependencyInfo>();
         }
 
         /* --- Overridden methods --- */
@@ -66,9 +66,9 @@ namespace Whitesource.Agent.Api.Model
 
             sb.Append("AgentProjectInfo@").Append(GetHashCode().ToString("X4"))
                 .Append("[")
-                .Append("coordinates= ").Append(coordinates).Append(",")
-                .Append("parentCoordinates= ").Append(parentCoordinates).Append(",")
-                .Append("projectToken= ").Append(projectToken)
+                .Append("coordinates= ").Append(Coordinates).Append(",")
+                .Append("parentCoordinates= ").Append(ParentCoordinates).Append(",")
+                .Append("projectToken= ").Append(ProjectToken)
                 .Append(" ]");
 
             return sb.ToString();
