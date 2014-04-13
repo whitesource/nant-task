@@ -31,7 +31,7 @@ namespace Whitesource.Agent.Api.Dispatch
         public String organization { get; set; }
 
         [DataMember(Name = "updatedProjects")]
-        public List<String> updatedProjects  { get; set; }
+        public List<String> updatedProjects { get; set; }
 
         [DataMember(Name = "createdProjects")]
         public List<String> createdProjects { get; set; }
@@ -53,9 +53,8 @@ namespace Whitesource.Agent.Api.Dispatch
 	     * @param organization Name of the domain.
 	     */
         public UpdateInventoryResult(String organization)
+            : this()
         {
-            updatedProjects = new List<String>();
-            createdProjects = new List<String>();
             this.organization = organization;
         }
     }

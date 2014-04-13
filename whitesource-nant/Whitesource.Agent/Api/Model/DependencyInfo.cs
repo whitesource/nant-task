@@ -83,8 +83,8 @@ namespace Whitesource.Agent.Api.Model
          * @param version
          */
         public DependencyInfo(String groupId, String artifactId, String version)
+            : this()
         {
-            exclusions = new List<ExclusionInfo>();
             this.groupId = groupId;
             this.artifactId = artifactId;
             this.version = version;
@@ -96,8 +96,8 @@ namespace Whitesource.Agent.Api.Model
          * @param sha1
          */
         public DependencyInfo(String sha1)
+            : this()
         {
-            exclusions = new List<ExclusionInfo>();
             this.sha1 = sha1;
         }
 

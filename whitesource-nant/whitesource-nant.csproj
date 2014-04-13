@@ -34,6 +34,35 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="NAntTask\Constants.cs" />
+    <Compile Include="NAntTask\UpdateTask.cs" />
+    <Compile Include="Whitesource.Agent\Api\APIConstants.cs" />
+    <Compile Include="Whitesource.Agent\Api\ChecksumUtils.cs" />
+    <Compile Include="Whitesource.Agent\Client\ClientConstants.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\BaseRequest.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\RequestType.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\ResultEnvelope.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\UpdateInventoryRequest.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\UpdateInventoryResult.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\AgentProjectInfo.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\Coordinates.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\DependencyInfo.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\ExclusionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NAnt.Core">
+      <HintPath>..\..\..\..\..\nant-0.92\bin\NAnt.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -43,7 +43,6 @@ namespace Whitesource.Agent.Api.Model
          */
         public ExclusionInfo()
         {
-
         }
 
         /**

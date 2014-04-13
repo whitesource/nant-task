@@ -16,15 +16,12 @@
 
 using System;
 
-namespace Whitesource.Agent.Api.Client
+namespace Whitesource.NAnt.Constants
 {
-    static class ClientConstants
+    public static class Constants
     {
-        public const String SERVICE_URL_KEYWORD = "wss.url";
-
-        public const String DEFAULT_SERVICE_URL = "https://saas.whitesourcesoftware.com/agent";
-
-        public const String APPLICATION_JSON = "application/json";
+        public const string AGENT_TYPE = "nant-task";
+        public const string AGENT_VERSION = "1.0";
     }
-
 }
+
