@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NAntTask\Constants.cs" />
-    <Compile Include="NAntTask\UpdateTask.cs" />
+    <Compile Include="NAntTask\WhitesourceTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Whitesource.Agent\Api\APIConstants.cs" />
     <Compile Include="Whitesource.Agent\Api\ChecksumUtils.cs" />

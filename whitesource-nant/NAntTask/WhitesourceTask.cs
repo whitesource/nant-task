@@ -39,8 +39,8 @@ namespace Whitesource.NAnt.Tasks
      * 
      * @author tom.shapira
      */
-    [TaskName("updatetask")]
-    public class UpdateTask : Task
+    [TaskName("whitesource-task")]
+    public class WhiteSourceTask : Task
     {
 
         /* --- Task Attributes --- */
