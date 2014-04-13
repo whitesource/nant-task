@@ -94,6 +94,16 @@ namespace Whitesource.NAnt.Tasks
             set { _checkPolicies = value; }
         }
 
+        private String _projectToken;
+
+        [TaskAttribute("projecttoken", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public String ProjectToken
+        {
+            get { return _projectToken; }
+            set { _projectToken = value; }
+        }
+
         /* --- Task Methods --- */
 
         // Override the ExecuteTask method.
@@ -104,10 +114,10 @@ namespace Whitesource.NAnt.Tasks
             {
                 wssUrl = ClientConstants.DEFAULT_SERVICE_URL;
             }
-            RunUpdate(Project, ApiKey, wssUrl);
+            RunUpdate(Project, ApiKey, wssUrl, ProjectToken);
         }
 
-        public void RunUpdate(Project project, String apiKey, String wssUrl)
+        public void RunUpdate(Project project, String apiKey, String wssUrl, String projectToken)
         {
             // If no includes were specified, add all files and subdirectories
             // from the fileset's base directory to the fileset.
@@ -120,7 +130,14 @@ namespace Whitesource.NAnt.Tasks
             }
 
             AgentProjectInfo projectInfo = new AgentProjectInfo();
-            projectInfo.coordinates = new Coordinates(null, project.ProjectName, null);
+            if (String.IsNullOrEmpty(projectToken))
+            {
+                projectInfo.coordinates = new Coordinates(null, project.ProjectName, null);
+            }
+            else
+            {
+                projectInfo.projectToken = projectToken;
+            }
 
             // scan files and calculate SHA-1 values
             List<DependencyInfo> dependencies = projectInfo.dependencies;
