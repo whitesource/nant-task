@@ -73,7 +73,7 @@ namespace Whitesource.NAnt.Tasks
 	     */
         private String _wssUrl;
 
-        [TaskAttribute("wssUrl", Required = false)]
+        [TaskAttribute("wssurl", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public String WssUrl
         {
@@ -144,7 +144,10 @@ namespace Whitesource.NAnt.Tasks
 
             // send request
             UpdateInventoryResult updateInventoryResult = UpdateInventory(wssUrl, apiKey, project.ProjectName, projectInfo);
-            LogUpdateResult(updateInventoryResult);
+            if (updateInventoryResult != null)
+            {
+                LogUpdateResult(updateInventoryResult);
+            }
         }
 
         /* --- Private methods --- */
