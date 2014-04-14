@@ -28,7 +28,7 @@ namespace Whitesource.Agent.Api.Dispatch
      * 
      * @author tom.shapira
      */
-    public class UpdateInventoryRequest : BaseRequest<UpdateInventoryResult>
+    public class CheckPoliciesRequest : BaseRequest<CheckPoliciesResult>
     {
 
         /* --- Members --- */
@@ -40,8 +40,8 @@ namespace Whitesource.Agent.Api.Dispatch
         /**
          * Default constructor
          */
-        public UpdateInventoryRequest()
-            : base(RequestType.UPDATE)
+        public CheckPoliciesRequest()
+            : base(RequestType.CHECK_POLICIES)
         {
             Projects = new List<AgentProjectInfo>();
         }
@@ -51,7 +51,7 @@ namespace Whitesource.Agent.Api.Dispatch
          *
          * @param projects Open Source usage statement to update White Source.
          */
-        public UpdateInventoryRequest(List<AgentProjectInfo> projects)
+        public CheckPoliciesRequest(List<AgentProjectInfo> projects)
             : this()
         {
             this.Projects = projects;
@@ -64,7 +64,7 @@ namespace Whitesource.Agent.Api.Dispatch
          * @param orgToken WhiteSource organization token.
          * @param projects Open Source usage statement to update White Source.
          */
-        public UpdateInventoryRequest(String orgToken, List<AgentProjectInfo> projects)
+        public CheckPoliciesRequest(String orgToken, List<AgentProjectInfo> projects)
             : this(projects)
         {
             this.OrgToken = orgToken;

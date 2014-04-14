@@ -44,21 +44,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NAntTask\CheckPolicies.cs" />
     <Compile Include="NAntTask\Constants.cs" />
     <Compile Include="NAntTask\WhitesourceTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Whitesource.Agent\Api\APIConstants.cs" />
     <Compile Include="Whitesource.Agent\Api\ChecksumUtils.cs" />
     <Compile Include="Whitesource.Agent\Api\Dispatch\BaseRequest.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\RequestFactory.cs" />
     <Compile Include="Whitesource.Agent\Api\Dispatch\RequestType.cs" />
     <Compile Include="Whitesource.Agent\Api\Dispatch\ResultEnvelope.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\CheckPoliciesRequest.cs" />
     <Compile Include="Whitesource.Agent\Api\Dispatch\UpdateInventoryRequest.cs" />
+    <Compile Include="Whitesource.Agent\Api\Dispatch\CheckPoliciesResult.cs" />
     <Compile Include="Whitesource.Agent\Api\Dispatch\UpdateInventoryResult.cs" />
     <Compile Include="Whitesource.Agent\Api\Model\AgentProjectInfo.cs" />
     <Compile Include="Whitesource.Agent\Api\Model\Coordinates.cs" />
     <Compile Include="Whitesource.Agent\Api\Model\DependencyInfo.cs" />
     <Compile Include="Whitesource.Agent\Api\Model\ExclusionInfo.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\PolicyCheckResourceNode.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\RequestPolicyInfo.cs" />
+    <Compile Include="Whitesource.Agent\Api\Model\ResourceInfo.cs" />
     <Compile Include="Whitesource.Agent\Client\ClientConstants.cs" />
+    <Compile Include="Whitesource.Agent\Client\WhitesourceService.cs" />
+    <Compile Include="Whitesource.Agent\Client\WssServiceClient.cs" />
+    <Compile Include="Whitesource.Agent\Client\WssServiceClientImpl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

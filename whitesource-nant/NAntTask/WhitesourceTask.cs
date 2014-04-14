@@ -84,6 +84,32 @@ namespace Whitesource.NAnt.Tasks
         }
 
         /**
+         * Name or unique identifier of the product to update.
+         */
+        private String _product;
+
+        [TaskAttribute("product", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public String Product
+        {
+            get { return _product; }
+            set { _product = value; }
+        }
+
+        private String _productVersion;
+
+        /**
+         * Version of the product to update.
+         */
+        [TaskAttribute("productversion", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public String ProductVersion
+        {
+            get { return _productVersion; }
+            set { _productVersion = value; }
+        }
+
+        /**
          * The network proxy to use to access the Internet resource.
          */
         private Proxy _proxy;
@@ -98,11 +124,10 @@ namespace Whitesource.NAnt.Tasks
         /**
          * Check policies configuration.
          */
-        private bool _checkPolicies;
+        private CheckPolicies _checkPolicies;
 
-        [TaskAttribute("checkPolicies", Required = false)]
-        [StringValidator(AllowEmpty = false)]
-        public bool CheckPolicies
+        [BuildElement("checkpolicies", Required = false)]
+        public CheckPolicies CheckPolicies
         {
             get { return _checkPolicies; }
             set { _checkPolicies = value; }
@@ -121,20 +146,80 @@ namespace Whitesource.NAnt.Tasks
             set { _projectToken = value; }
         }
 
+        /* --- Members --- */
+
+        private WhitesourceService service;
+
+        private List<AgentProjectInfo> projects;
+
         /* --- Task Methods --- */
 
         // Override the ExecuteTask method.
         protected override void ExecuteTask()
         {
-            String wssUrl = WssUrl;
-            if (String.IsNullOrEmpty(WssUrl))
+            CreateService();
+            projects = new List<AgentProjectInfo>();
+            ScanFiles();
+
+            // determine product name and version
+            String productName;
+            if (String.IsNullOrEmpty(Product))
             {
-                wssUrl = ClientConstants.DEFAULT_SERVICE_URL;
+                productName = Project.ProjectName;
             }
-            RunUpdate(Project, ApiKey, wssUrl, ProjectToken);
+            else
+            {
+                productName = Product;
+            }
+
+            String productVersion = "";
+            if (String.IsNullOrEmpty(ProductVersion))
+            {
+                productName = ProductVersion;
+            }
+
+            // send check policies request
+            if (CheckPolicies != null)
+            {
+                Log(Level.Info, "Checking policies");
+                CheckPoliciesResult checkPoliciesResult = service.CheckPolicies(ApiKey, productName, productVersion, projects);
+            }
+
+            // send update request
+            Log(Level.Info, "Updating White Source");
+            UpdateInventoryResult updateInventoryResult = service.Update(ApiKey, productName, productVersion, projects);
+            if (updateInventoryResult != null)
+            {
+                LogUpdateResult(updateInventoryResult);
+            }
         }
 
-        public void RunUpdate(Project project, String apiKey, String wssUrl, String projectToken)
+        /* --- Private methods --- */
+
+        private void CreateService()
+        {
+            Log(Level.Debug, "Service Url is " + WssUrl);
+
+            if (Proxy == null)
+            {
+                service = new WhitesourceService(Consts.AGENT_TYPE, Consts.AGENT_VERSION, WssUrl);
+            }
+            else
+            {
+                Credential credentials = Proxy.Credentials;
+                if (credentials == null)
+                {
+                    service = new WhitesourceService(Consts.AGENT_TYPE, Consts.AGENT_VERSION, WssUrl, Proxy.Host, Proxy.Port);
+                }
+                else
+                {
+                    service = new WhitesourceService(Consts.AGENT_TYPE, Consts.AGENT_VERSION, WssUrl, 
+                        Proxy.Host, Proxy.Port, credentials.UserName, credentials.Password);
+                }
+            }
+        }
+
+        private void ScanFiles()
         {
             // If no includes were specified, add all files and subdirectories
             // from the fileset's base directory to the fileset.
@@ -142,18 +227,18 @@ namespace Whitesource.NAnt.Tasks
             {
                 FileSet.Includes.Add("**/*.dll");
 
-                // Make sure to rescan the fileset after adding "**/*"
+                // Make sure to rescan the fileset
                 FileSet.Scan();
             }
 
             AgentProjectInfo projectInfo = new AgentProjectInfo();
-            if (String.IsNullOrEmpty(projectToken))
+            if (String.IsNullOrEmpty(ProjectToken))
             {
-                projectInfo.Coordinates = new Coordinates(null, project.ProjectName, null);
+                projectInfo.Coordinates = new Coordinates(null, Project.ProjectName, null);
             }
             else
             {
-                projectInfo.ProjectToken = projectToken;
+                projectInfo.ProjectToken = ProjectToken;
             }
 
             // scan files and calculate SHA-1 values
@@ -175,163 +260,7 @@ namespace Whitesource.NAnt.Tasks
                 }
             }
             Log(Level.Info, "Found " + dependencies.Count + " direct dependencies");
-
-            // send request
-            UpdateInventoryResult updateInventoryResult = UpdateInventory(wssUrl, apiKey, project.ProjectName, projectInfo);
-            if (updateInventoryResult != null)
-            {
-                LogUpdateResult(updateInventoryResult);
-            }
-        }
-
-        /* --- Private methods --- */
-
-        /**
-         * The method calls the White Source service for inventory update.
-         */
-        private UpdateInventoryResult UpdateInventory(String serviceUrl, String apiKey, String productName, AgentProjectInfo projectInfo)
-        {
-            try
-            {
-                HttpWebRequest request = WebRequest.Create(serviceUrl) as HttpWebRequest;
-                request.Method = "POST";
-                request.ContentType = "application/x-www-form-urlencoded";
-                request.Accept = "application/json";
-
-                SetProxy(request);
-
-                // add post data to request
-                StringBuilder postString = new StringBuilder();
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_REQUEST_TYPE, System.Web.HttpUtility.UrlEncode("UPDATE"));
-                postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_AGENT, System.Web.HttpUtility.UrlEncode(Consts.AGENT_TYPE));
-                postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_AGENT_VERSION, System.Web.HttpUtility.UrlEncode(Consts.AGENT_VERSION));
-                postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_TOKEN, System.Web.HttpUtility.UrlEncode(apiKey));
-                postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_PRODUCT, System.Web.HttpUtility.UrlEncode(productName));
-                postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_PRODUCT_VERSION, System.Web.HttpUtility.UrlEncode(""));
-                postString.Append("&");
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_TIME_STAMP, System.Web.HttpUtility.UrlEncode(DateTime.Now.ToFileTime().ToString()));
-                postString.Append("&");
-
-                // Serialize to JSON
-                List<AgentProjectInfo> projects = new List<AgentProjectInfo>();
-                projects.Add(projectInfo);
-                System.Runtime.Serialization.Json.DataContractJsonSerializer serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(List<AgentProjectInfo>));
-                MemoryStream ms = new MemoryStream();
-                serializer.WriteObject(ms, projects);
-                String json = Encoding.Default.GetString(ms.ToArray());
-                postString.AppendFormat("{0}={1}", APIConstants.PARAM_DIFF, System.Web.HttpUtility.UrlEncode(json));
-                Log(Level.Debug, "AgentProjectInfo JSON: " + json);
-                DebugAgentProjectInfos(projects);
-
-                ASCIIEncoding ascii = new ASCIIEncoding();
-                byte[] postBytes = ascii.GetBytes(postString.ToString());
-                request.ContentLength = postBytes.Length;
-
-                Stream postStream = request.GetRequestStream();
-                postStream.Write(postBytes, 0, postBytes.Length);
-                postStream.Close();
-
-                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-                {
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        throw new Exception(String.Format("Server error (HTTP {0}: {1}).", response.StatusCode, response.StatusDescription));
-                    }
-
-                    using (Stream stream = response.GetResponseStream())
-                    {
-                        StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                        String responseString = reader.ReadToEnd();
-                        Log(Level.Debug, "response: " + responseString);
-
-                        // convert response JSON to ResultEnvelope
-                        ResultEnvelope resultEnvelope;
-                        MemoryStream responseMS = new MemoryStream(Encoding.Unicode.GetBytes(responseString));
-                        System.Runtime.Serialization.Json.DataContractJsonSerializer responseSerializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ResultEnvelope));
-                        resultEnvelope = responseSerializer.ReadObject(responseMS) as ResultEnvelope;
-                        responseMS.Close();
-
-                        String data = resultEnvelope.Data;
-                        Log(Level.Debug, "Result data is: " + data);
-
-                        // convert data JSON to UpdateInventoryResult
-                        UpdateInventoryResult updateInventoryResult;
-                        MemoryStream dataMS = new MemoryStream(Encoding.Unicode.GetBytes(data));
-                        System.Runtime.Serialization.Json.DataContractJsonSerializer updateSerializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(UpdateInventoryResult));
-                        updateInventoryResult = updateSerializer.ReadObject(dataMS) as UpdateInventoryResult;
-                        dataMS.Close();
-
-                        return updateInventoryResult;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
-        }
-
-        private void SetProxy(HttpWebRequest request)
-        {
-            if (Proxy == null)
-            {
-                Log(Level.Debug, "Not using proxy");
-            }
-            else
-            {
-                String host = Proxy.Host;
-                int port = Proxy.Port;
-                Log(Level.Debug, "Using proxy: " + host + ":" + port);
-
-                // check credentials
-                Credential credential = Proxy.Credentials;
-                if (credential == null)
-                {
-                    request.Proxy = new WebProxy(host, port);
-                }
-                else
-                {
-                    Uri proxyURI = new Uri(String.Format("{0}:{1}", host, port));
-                    String userName = credential.UserName;
-                    String password = credential.Password;
-                    if (String.IsNullOrEmpty(userName) && String.IsNullOrEmpty(password))
-                    {
-                        request.Proxy = new WebProxy(host, port);
-                    }
-                    else
-                    {
-                        ICredentials credentials = new NetworkCredential(userName, password);
-                        request.Proxy = new WebProxy(proxyURI, true, null, credentials);
-                    }
-                }
-            }
-        }
-
-        private void DebugAgentProjectInfos(List<AgentProjectInfo> projectInfos)
-        {
-            Log(Level.Debug, "|----------------- dumping projectInfos -----------------|");
-            Log(Level.Debug, "Total number of projects : " + projectInfos.Count);
-
-            foreach (AgentProjectInfo projectInfo in projectInfos)
-            {
-                Log(Level.Debug, "Project coordinates: " + projectInfo.Coordinates);
-                Log(Level.Debug, "Project parent coordinates: " + projectInfo.ParentCoordinates);
-                Log(Level.Debug, "Project project token: " + projectInfo.ProjectToken);
-
-                List<DependencyInfo> dependencies = projectInfo.Dependencies;
-                Log(Level.Debug, "total # of dependencies: " + dependencies.Count);
-                foreach (DependencyInfo info in dependencies)
-                {
-                    Log(Level.Debug, info + " SHA-1: " + info.Sha1);
-                }
-            }
-            Log(Level.Debug, "|-------------------- dump finished --------------------|");
+            projects.Add(projectInfo);
         }
 
         private void LogUpdateResult(UpdateInventoryResult result)

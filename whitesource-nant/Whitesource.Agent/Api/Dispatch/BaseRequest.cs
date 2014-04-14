@@ -24,24 +24,24 @@ namespace Whitesource.Agent.Api.Dispatch
      * 
      * @author tom.shapira
      */
-    public abstract class BaseRequest
+    public abstract class BaseRequest<BaseResponse>
     {
 
         /* --- Members --- */
 
-        protected RequestType Type { get; set; }
+        public RequestType Type { get; set; }
 
-        protected String Agent { get; set; }
+        public String Agent { get; set; }
 
-        protected String AgentVersion { get; set; }
+        public String AgentVersion { get; set; }
 
-        protected String OrgToken { get; set; }
+        public String OrgToken { get; set; }
 
-        protected String Product { get; set; }
+        public String Product { get; set; }
 
-        protected String ProductVersion { get; set; }
+        public String ProductVersion { get; set; }
 
-        protected long TimeStamp { get; set; }
+        public long TimeStamp { get; set; }
 
         /* --- Constructors --- */
 
