@@ -61,7 +61,7 @@ namespace Whitesource.Agent.Report
             }
             writer.WriteLine("</h2><br/></div>");
 
-            writer.WriteLine("<div align='left'><div class='wssTextAlign' style='width: 500px; padding-left: 10px;'><div><span class='wssGeneralIcon'></span><div class='wssProjectHeader' style='display: inline-block'>General details</div></div><table style='width: 100%;' class='wssTable wssTextColor'><tbody>");
+            writer.WriteLine("<div align='left'><div class='wssTextAlign' style='width: 500px; padding-left: 10px;'><div><span class='wssGeneralIcon'></span><div class='wssProjectHeader' style='display: inline-block'>General Details</div></div><table style='width: 100%;' class='wssTable wssTextColor'><tbody>");
             if (!String.IsNullOrEmpty(buildName))
             {
                 writer.WriteLine("<tr><td>Build Name</td><td>$buildName</td></tr>".Replace("$buildName", buildName));
@@ -74,12 +74,12 @@ namespace Whitesource.Agent.Report
             writer.WriteLine("<tr><td>Report creation time</td><td>$creationTime</td></tr></tbody></table></div></div>".Replace("$creationTime", DateTime.Now.ToString()));
             writer.WriteLine(LINE_SEPARATOR);
 
-            writer.WriteLine("<div class='wssTextAlign'><div style='padding-bottom: 1px;'><span class='wssProjectIcon'></span><div class='wssProjectHeader' style='display: inline-block'>New projects</div><span class='wssTextColor wssProjectStats'>");
+            writer.WriteLine("<div class='wssTextAlign'><div style='padding-bottom: 1px;'><span class='wssProjectIcon'></span><div class='wssProjectHeader' style='display: inline-block'>New Projects</div><span class='wssTextColor wssProjectStats'>");
             writer.WriteLine("found $result.newProjects.size() new projects </span></div>".Replace("$result.newProjects.size()", result.NewProjects.Count.ToString()));
 
             WriteProjectsSummary(result.NewProjects, "new-project", writer);
             writer.WriteLine(LINE_SEPARATOR);
-            writer.WriteLine("<div style='padding-bottom: 1px;'><span class='wssProjectIcon'></span><div class='wssProjectHeader' style='display: inline-block'>Existing projects</div><span class='wssTextColor wssProjectStats'>found $result.existingProjects.size() existing projects </span></div>"
+            writer.WriteLine("<div style='padding-bottom: 1px;'><span class='wssProjectIcon'></span><div class='wssProjectHeader' style='display: inline-block'>Existing Projects</div><span class='wssTextColor wssProjectStats'>found $result.existingProjects.size() existing projects </span></div>"
                 .Replace("$result.existingProjects.size()", result.ExistingProjects.Count.ToString()));
             WriteProjectsSummary(result.ExistingProjects, "existing-project", writer);
             writer.WriteLine("</div>");
@@ -89,7 +89,7 @@ namespace Whitesource.Agent.Report
             List<LicenseHistogramDataPoint> licenses = CreateLicenseHistogram(result);
             if (licenses.Count > 0)
             {
-                writer.WriteLine("<div class='wssTextAlign' style='margin: 10px;'><div style='padding-bottom: 1px;'><span class='wssLicenseIcon'></span><div class='wssProjectHeader' style='display: inline-block'>License distribution</div></div><table class='wssLicenses wssTextColor'><tr>");
+                writer.WriteLine("<div class='wssTextAlign' style='margin: 10px;'><div style='padding-bottom: 1px;'><span class='wssLicenseIcon'></span><div class='wssProjectHeader' style='display: inline-block'>License Distribution</div></div><table class='wssLicenses wssTextColor'><tr>");
                 foreach (LicenseHistogramDataPoint license in licenses)
                 {
                     writer.WriteLine("<td style='width: 100px; padding: 0px; vertical-align: bottom;'><table style='border-spacing: 0px 0px; width:100px; text-align:center'><tr><td style=' font-size:12px;'>$license.occurrences<td></tr><tr><td style='padding-bottom:0px; padding-right:40px; padding-left:40px'>"
@@ -134,7 +134,7 @@ namespace Whitesource.Agent.Report
                 }
 
                 String detailsId = detailsPrefix + "-details-" + dictionary.Count;
-                writer.WriteLine("</div><a class='wssAnchor' href='#' onclick=\"toggleDetails(this, '$detailsId')\" style='float:right; padding: 5px;'>show details</a></div>".Replace("$detailsId", detailsId));
+                writer.WriteLine("</div><a class='wssAnchor' href='#' onclick=\"toggleDetails(this, '$detailsId')\" style='float:right; padding: 5px; line-height: 28px;'>show details</a></div>".Replace("$detailsId", detailsId));
 
                 writer.WriteLine("<div id='$detailsId' style='width: 100%; display: none;' class='wssBorder wssDetailsBackground'>".Replace("$detailsId", detailsId));
                 WriteProjectDependenciesTree(pair.Value, writer);
