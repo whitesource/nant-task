@@ -123,7 +123,8 @@ namespace Whitesource.Agent.Report
             foreach (KeyValuePair<string, PolicyCheckResourceNode> pair in dictionary)
             {
                 writer.WriteLine("<div class='wssProjectEntry'><div style='width: 100%;' class='wssBorder wssProjectCaptionBackground'><div style='display: inline-block; padding-left: 10px;'>");
-                writer.WriteLine("<div class='wssTextColor wssProjectTitle'>$entry.key</div></div><div style='display: inline-block; padding-left: 10px'>".Replace("$entry.key", pair.Key));
+                writer.WriteLine("<div class='wssTextColor wssProjectTitle'>$entry.key</div></div><div style='display: inline-block; padding-left: 10px'>"
+                    .Replace("$entry.key", pair.Key));
                 if (pair.Value.HasRejections())
                 {
                     writer.WriteLine(REJECT);
@@ -134,9 +135,12 @@ namespace Whitesource.Agent.Report
                 }
 
                 String detailsId = detailsPrefix + "-details-" + dictionary.Count;
-                writer.WriteLine("</div><a class='wssAnchor' href='#' onclick=\"toggleDetails(this, '$detailsId')\" style='float:right; padding: 5px; line-height: 28px;'>show details</a></div>".Replace("$detailsId", detailsId));
+                writer.WriteLine("</div><a class='wssAnchor' href='#' onclick=\"toggleDetails(this, '$detailsId')\" style='float:right; padding: 5px; line-height: 28px;'>show details</a></div>"
+                    .Replace("$detailsId", detailsId));
 
-                writer.WriteLine("<div id='$detailsId' style='width: 100%; display: none;' class='wssBorder wssDetailsBackground'>".Replace("$detailsId", detailsId));
+                writer.WriteLine("<div id='$detailsId' style='width: 100%; display: none;' class='wssBorder wssDetailsBackground'>"
+                    .Replace("$detailsId", detailsId));
+
                 WriteProjectDependenciesTree(pair.Value, writer);
                 writer.WriteLine("</div></div>");
             }
@@ -146,7 +150,7 @@ namespace Whitesource.Agent.Report
         {
             if (root.Children.Count == 0)
             {
-                writer.WriteLine("No libraries found in project");
+                writer.WriteLine("No new libraries found in project");
             }
             else
             {

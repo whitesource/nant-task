@@ -186,7 +186,7 @@ namespace Whitesource.NAnt.Tasks
             String productVersion = "";
             if (String.IsNullOrEmpty(ProductVersion))
             {
-                productName = ProductVersion;
+                productVersion = ProductVersion;
             }
 
             // send check policies request
