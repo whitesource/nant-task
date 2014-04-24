@@ -194,10 +194,6 @@ namespace Whitesource.NAnt.Tasks
             {
                 Log(Level.Info, "Checking policies");
                 CheckPoliciesResult checkPoliciesResult = service.CheckPolicies(ApiKey, productName, productVersion, projects);
-                Log(Level.Info, checkPoliciesResult.Organization);
-                Log(Level.Info, "Existing projects: " + checkPoliciesResult.ExistingProjects.Count);
-                Log(Level.Info, "Newly Created projects: " + checkPoliciesResult.NewProjects.Count);
-                Log(Level.Info, "Has Rejections: " + checkPoliciesResult.HasRejections().ToString());
                 HandlePoliciesResult(checkPoliciesResult);
             }
 

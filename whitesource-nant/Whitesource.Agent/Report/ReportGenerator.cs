@@ -210,7 +210,7 @@ namespace Whitesource.Agent.Report
                         int occurrence = 0;
                         if (licenseHistogram.TryGetValue(license, out occurrence))
                         {
-                            licenseHistogram.Add(license, occurrence + 1);
+                            licenseHistogram[license] = occurrence + 1;
                         }
                         else
                         {
