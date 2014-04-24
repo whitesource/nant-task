@@ -25,6 +25,7 @@ using Whitesource.Agent.Api;
 using Whitesource.Agent.Client;
 using Whitesource.Agent.Api.Model;
 using Whitesource.Agent.Api.Dispatch;
+using System.Runtime.Serialization.Json;
 
 namespace Whitesource.Agent.Client
 {
@@ -47,6 +48,8 @@ namespace Whitesource.Agent.Client
         protected String proxyUsername;
 
         protected String proxyPassword;
+
+        private bool debug;
 
         /* --- Constructors --- */
 
@@ -73,6 +76,7 @@ namespace Whitesource.Agent.Client
             {
                 this.serviceUrl = serviceUrl;
             }
+            debug = false;
         }
 
         /* --- Overridden methods --- */
@@ -99,6 +103,11 @@ namespace Whitesource.Agent.Client
             this.proxyPort = proxyPort;
             this.proxyUsername = proxyUsername;
             this.proxyPassword = proxyPassword;
+        }
+
+        void WssServiceClient.SetDebug(bool debug)
+        {
+            this.debug = debug;
         }
 
         /* --- Private methods --- */
@@ -167,7 +176,7 @@ namespace Whitesource.Agent.Client
                     {
                         StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                         String responseString = reader.ReadToEnd();
-                        //Log(Level.Debug, "response: " + responseString);
+                        Debug("response: " + responseString);
 
                         // convert response JSON to ResultEnvelope
                         ResultEnvelope resultEnvelope;
@@ -177,7 +186,7 @@ namespace Whitesource.Agent.Client
                         responseMS.Close();
 
                         String data = resultEnvelope.Data;
-                        //Log(Level.Debug, "Result data is: " + data);
+                        Debug("Result data is: " + data);
 
                         // convert data JSON to result according to type
                         R result;
@@ -190,7 +199,11 @@ namespace Whitesource.Agent.Client
                                 dataMS.Close();
                                 break;
                             case RequestType.CHECK_POLICIES:
-                                System.Runtime.Serialization.Json.DataContractJsonSerializer checkPoliciesSerializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(CheckPoliciesResult));
+                                // enable Dictionary support
+                                DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings();
+                                settings.UseSimpleDictionaryFormat = true;
+
+                                System.Runtime.Serialization.Json.DataContractJsonSerializer checkPoliciesSerializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(CheckPoliciesResult), settings);
                                 result = (R)Convert.ChangeType(checkPoliciesSerializer.ReadObject(dataMS) as CheckPoliciesResult, typeof(R));
                                 dataMS.Close();
                                 break;
@@ -206,7 +219,7 @@ namespace Whitesource.Agent.Client
             }
             catch (Exception e)
             {
-                //Log(Level.Error, e.Message);
+                Debug(e.Message);
                 return default(R);
             }
         }
@@ -218,7 +231,7 @@ namespace Whitesource.Agent.Client
         {
             if (String.IsNullOrEmpty(proxyHost))
             {
-                //Log(Level.Debug, "Not using proxy");
+                Debug("Not using proxy");
             }
             else
             {
@@ -245,29 +258,37 @@ namespace Whitesource.Agent.Client
             postString.Append("&");
             postString.AppendFormat("{0}={1}", APIConstants.PARAM_DIFF, System.Web.HttpUtility.UrlEncode(json));
 
-            //Log(Level.Debug, "AgentProjectInfo JSON: " + json);
-            //DebugAgentProjectInfos(projects);
+            Debug("AgentProjectInfo JSON: " + json);
+            DebugAgentProjectInfos(projects);
         }
 
-        /*private void DebugAgentProjectInfos(List<AgentProjectInfo> projectInfos)
+        private void DebugAgentProjectInfos(List<AgentProjectInfo> projectInfos)
         {
-            Log(Level.Debug, "|----------------- dumping projectInfos -----------------|");
-            Log(Level.Debug, "Total number of projects : " + projectInfos.Count);
+            Debug("|----------------- dumping projectInfos -----------------|");
+            Debug("Total number of projects : " + projectInfos.Count);
 
             foreach (AgentProjectInfo projectInfo in projectInfos)
             {
-                Log(Level.Debug, "Project coordinates: " + projectInfo.Coordinates);
-                Log(Level.Debug, "Project parent coordinates: " + projectInfo.ParentCoordinates);
-                Log(Level.Debug, "Project project token: " + projectInfo.ProjectToken);
+                Debug("Project coordinates: " + projectInfo.Coordinates);
+                Debug("Project parent coordinates: " + projectInfo.ParentCoordinates);
+                Debug("Project project token: " + projectInfo.ProjectToken);
 
                 List<DependencyInfo> dependencies = projectInfo.Dependencies;
-                Log(Level.Debug, "total # of dependencies: " + dependencies.Count);
+                Debug("total # of dependencies: " + dependencies.Count);
                 foreach (DependencyInfo info in dependencies)
                 {
-                    Log(Level.Debug, info + " SHA-1: " + info.Sha1);
+                    Debug("" + info + " SHA-1: " + info.Sha1);
                 }
             }
-            Log(Level.Debug, "|-------------------- dump finished --------------------|");
-        }*/
+            Debug("|-------------------- dump finished --------------------|");
+        }
+
+        private void Debug(String msg)
+        {
+            if (debug)
+            {
+                Console.WriteLine("[whitesource-task] " + msg);
+            }
+        }
     }
 }

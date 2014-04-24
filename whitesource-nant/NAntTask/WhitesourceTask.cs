@@ -25,8 +25,9 @@ using NAnt.Core.Attributes;
 using NAnt.Core.Types;
 
 using Whitesource.Agent;
-using Whitesource.Agent.Api;
 using Whitesource.Agent.Client;
+using Whitesource.Agent.Report;
+using Whitesource.Agent.Api;
 using Whitesource.Agent.Api.Model;
 using Whitesource.Agent.Api.Dispatch;
 
@@ -146,6 +147,16 @@ namespace Whitesource.NAnt.Tasks
             set { _projectToken = value; }
         }
 
+        private bool _debug;
+
+        [TaskAttribute("debug", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool Debug
+        {
+            get { return _debug; }
+            set { _debug = value; }
+        }
+
         /* --- Members --- */
 
         private WhitesourceService service;
@@ -183,6 +194,11 @@ namespace Whitesource.NAnt.Tasks
             {
                 Log(Level.Info, "Checking policies");
                 CheckPoliciesResult checkPoliciesResult = service.CheckPolicies(ApiKey, productName, productVersion, projects);
+                Log(Level.Info, checkPoliciesResult.Organization);
+                Log(Level.Info, "Existing projects: " + checkPoliciesResult.ExistingProjects.Count);
+                Log(Level.Info, "Newly Created projects: " + checkPoliciesResult.NewProjects.Count);
+                Log(Level.Info, "Has Rejections: " + checkPoliciesResult.HasRejections().ToString());
+                HandlePoliciesResult(checkPoliciesResult);
             }
 
             // send update request
@@ -217,6 +233,7 @@ namespace Whitesource.NAnt.Tasks
                         Proxy.Host, Proxy.Port, credentials.UserName, credentials.Password);
                 }
             }
+            service.SetDebug(Debug || Level.Debug == Project.Threshold);
         }
 
         private void ScanFiles()
@@ -263,6 +280,39 @@ namespace Whitesource.NAnt.Tasks
             projects.Add(projectInfo);
         }
 
+        private void HandlePoliciesResult(CheckPoliciesResult result)
+        {
+            // generate report
+            try
+            {
+                Log(Level.Info, "Creating policies report");
+                PolicyCheckReport report = new PolicyCheckReport(result);
+                report.Generate(CheckPolicies.ReportDir, false);
+            }
+            catch (IOException e)
+            {
+                error(e);
+            }
+
+            // handle rejections if any
+            if (result.HasRejections())
+            {
+                String rejectionsErrorMessage = "Some dependencies do not conform with open source policies, see report for details.";
+                if (CheckPolicies.FailOnRejection)
+                {
+                    throw new BuildException(rejectionsErrorMessage);
+                }
+                else
+                {
+                    Log(Level.Warning, rejectionsErrorMessage);
+                }
+            }
+            else
+            {
+                Log(Level.Info, "All dependencies conform with open source policies");
+            }
+        }
+
         private void LogUpdateResult(UpdateInventoryResult result)
         {
             Log(Level.Info, "White Source update results:");
@@ -296,6 +346,30 @@ namespace Whitesource.NAnt.Tasks
                 {
                     Log(Level.Info, projectName);
                 }
+            }
+        }
+
+        private void error(String errorMsg)
+        {
+            if (FailOnError)
+            {
+                throw new BuildException(errorMsg);
+            }
+            else
+            {
+                Log(Level.Error, errorMsg);
+            }
+        }
+
+        private void error(Exception ex)
+        {
+            if (FailOnError)
+            {
+                throw new BuildException(ex.Message, ex);
+            }
+            else
+            {
+                Log(Level.Error, ex.Message);
             }
         }
 

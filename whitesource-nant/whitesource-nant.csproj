@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>whitesource_nant</RootNamespace>
     <AssemblyName>whitesource-nant</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,6 +36,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +51,11 @@
     <Compile Include="NAntTask\Constants.cs" />
     <Compile Include="NAntTask\WhitesourceTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Whitesource.Agent\Api\APIConstants.cs" />
     <Compile Include="Whitesource.Agent\Api\ChecksumUtils.cs" />
     <Compile Include="Whitesource.Agent\Api\Dispatch\BaseRequest.cs" />
@@ -69,7 +77,23 @@
     <Compile Include="Whitesource.Agent\Client\WhitesourceService.cs" />
     <Compile Include="Whitesource.Agent\Client\WssServiceClient.cs" />
     <Compile Include="Whitesource.Agent\Client\WssServiceClientImpl.cs" />
+    <Compile Include="Whitesource.Agent\Report\Model\LicenseHistogramDataPoint.cs" />
+    <Compile Include="Whitesource.Agent\Report\PolicyCheckReport.cs" />
+    <Compile Include="Whitesource.Agent\Report\ReportGenerator.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Whitesource.Agent\Report\Resources\Templates\policy-check.vm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Whitesource.Agent\Report\Resources\Templates\wss.css" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

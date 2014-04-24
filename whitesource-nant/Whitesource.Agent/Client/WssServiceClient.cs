@@ -47,5 +47,7 @@ namespace Whitesource.Agent.Client
         void SetProxy(String proxyHost, int proxyPort);
 
         void SetProxy(String proxyHost, int proxyPort, String proxyUsername, String proxyPassword);
+
+        void SetDebug(bool debug);
     }
 }

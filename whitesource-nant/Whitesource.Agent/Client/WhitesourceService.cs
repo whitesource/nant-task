@@ -104,5 +104,10 @@ namespace Whitesource.Agent.Client
                     requestFactory.NewCheckPoliciesRequest(orgToken, product, productVersion, projectInfos));
         }
 
+        public void SetDebug(bool debug)
+        {
+            client.SetDebug(debug);
+        }
+
     }
 }
