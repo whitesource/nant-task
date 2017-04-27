@@ -133,7 +133,7 @@ namespace Whitesource.NAnt.Tasks
             get { return _checkPolicies; }
             set { _checkPolicies = value; }
         }
-
+        
         /**
 	     * Module token to match White Source project.
 	     */
@@ -290,10 +290,12 @@ namespace Whitesource.NAnt.Tasks
                 error(e);
             }
 
+            String message;
+            bool hasRejections = result.HasRejections();
             // handle rejections if any
-            if (result.HasRejections())
+            if (hasRejections && !CheckPolicies.ForceUpdate)
             {
-                String rejectionsErrorMessage = "Some dependencies do not conform with open source policies, see report for details.";
+                String rejectionsErrorMessage = "Open source rejected by organization policies.";
                 if (CheckPolicies.FailOnRejection)
                 {
                     throw new BuildException(rejectionsErrorMessage);
@@ -305,7 +307,9 @@ namespace Whitesource.NAnt.Tasks
             }
             else
             {
-                Log(Level.Info, "All dependencies conform with open source policies");
+                message = hasRejections ? "Some dependencies violate open source policies, however all were forced updated to organization inventory" : 
+                    "All dependencies conform with open source policies";
+                Log(Level.Info, message);
             }
         }
 

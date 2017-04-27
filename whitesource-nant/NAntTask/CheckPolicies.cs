@@ -43,6 +43,20 @@ namespace Whitesource.NAnt.Tasks
             set { _failOnRejection = value; }
         }
 
+        /**
+         * Updates organization inventory regardless of policy violations
+         */
+        private bool _forceUpdate;
+
+        [TaskAttribute("forceupdate", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool ForceUpdate
+        {
+            get { return _forceUpdate; }
+            set { _forceUpdate = value;  }
+        }
+
+
         /* --- Constructors --- */
 
         public CheckPolicies()
