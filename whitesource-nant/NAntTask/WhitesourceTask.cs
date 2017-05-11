@@ -190,19 +190,27 @@ namespace Whitesource.NAnt.Tasks
             }
 
             // send check policies request
+            bool doUpdateInventory = false;
             if (CheckPolicies != null)
             {
                 Log(Level.Info, "Checking policies");
                 CheckPoliciesResult checkPoliciesResult = service.CheckPolicies(ApiKey, productName, productVersion, projects);
-                HandlePoliciesResult(checkPoliciesResult);
+                doUpdateInventory = HandlePoliciesResult(checkPoliciesResult);
             }
 
-            // send update request
-            Log(Level.Info, "Updating White Source");
-            UpdateInventoryResult updateInventoryResult = service.Update(ApiKey, productName, productVersion, projects);
-            if (updateInventoryResult != null)
+            if (doUpdateInventory)
             {
-                LogUpdateResult(updateInventoryResult);
+                // send update request
+                Log(Level.Info, "Updating White Source");
+                UpdateInventoryResult updateInventoryResult = service.Update(ApiKey, productName, productVersion, projects);
+                if (updateInventoryResult != null)
+                {
+                    LogUpdateResult(updateInventoryResult);
+                    if (CheckPolicies.FailOnRejection)
+                    {
+                        throw new BuildException("Build failed due to policy violations.");
+                    }
+                }
             }
         }
 
@@ -276,7 +284,7 @@ namespace Whitesource.NAnt.Tasks
             projects.Add(projectInfo);
         }
 
-        private void HandlePoliciesResult(CheckPoliciesResult result)
+        private bool HandlePoliciesResult(CheckPoliciesResult result)
         {
             // generate report
             try
@@ -303,6 +311,7 @@ namespace Whitesource.NAnt.Tasks
                 else
                 {
                     Log(Level.Warning, rejectionsErrorMessage);
+                    return false;
                 }
             }
             else
@@ -311,6 +320,7 @@ namespace Whitesource.NAnt.Tasks
                     "All dependencies conform with open source policies";
                 Log(Level.Info, message);
             }
+            return true;
         }
 
         private void LogUpdateResult(UpdateInventoryResult result)
