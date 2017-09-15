@@ -248,7 +248,7 @@ namespace Whitesource.Agent.Report
                 int tailSum = 0;
                 if (tailSize > 0)
                 {
-                    foreach (KeyValuePair<String, int> pair in licenses.GetRange(LICENSE_LIMIT, licenseCount))
+                    foreach (KeyValuePair<String, int> pair in licenses.GetRange(LICENSE_LIMIT, tailSize))
                     {
                         tailSum += pair.Value;
                     }
