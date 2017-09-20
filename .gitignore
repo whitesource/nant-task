@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/.vs/whitesource-nant/v15/sqlite3
+/packages/NAnt.Core.0.92
